@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(vercel --version)",
+      "Bash(vercel:*)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:guild.com)",
+      "Bash(node:*)",
+      "Bash(ls /Users/yannickdawant/Documents/development/clo_exchange_ai_assessment/.env*)",
+      "Bash(ls /Users/yannickdawant/Documents/development/clo_exchange_ai_assessment/*.env)",
+      "Bash(git push:*)",
+      "Bash(npm install *)",
+      "Read(//Users/svetlanadawant/.nvm/**)",
+      "Read(//opt/homebrew/**)",
+      "Bash(ls /pkg/env/global/bin/ 2>/dev/null | grep -E \"node|npm|bun\")"
+    ]
+  }
+}
