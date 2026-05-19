@@ -6,9 +6,10 @@ import type { IntakeData } from '@/lib/types'
 interface IntakeFormProps {
   initial: IntakeData
   onSubmit: (data: IntakeData) => void
+  title?: string
 }
 
-export function IntakeForm({ initial, onSubmit }: IntakeFormProps) {
+export function IntakeForm({ initial, onSubmit, title = 'Organizational AI Maturity Assessment' }: IntakeFormProps) {
   const [values, setValues] = useState<IntakeData>(initial)
   const [errors, setErrors] = useState<Partial<Record<keyof IntakeData, string>>>({})
 
@@ -46,7 +47,7 @@ export function IntakeForm({ initial, onSubmit }: IntakeFormProps) {
           <img src="/qr-code.png" alt="QR code" className="w-48 h-48 rounded-xl mb-4" />
           <p className="text-gray-400 text-xs tracking-wide uppercase">Scan to take the assessment</p>
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Organizational AI Maturity Assessment</h1>
+        <h1 className="text-2xl font-bold text-white mb-2">{title}</h1>
         <p className="text-gray-300 mb-8 text-sm">
           Let&apos;s get started.
         </p>

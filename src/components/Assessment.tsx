@@ -1,28 +1,30 @@
 'use client'
 
 import { QUESTIONS } from '@/lib/config'
+import type { Question } from '@/lib/config'
 import type { Answers } from '@/lib/types'
 
 interface AssessmentProps {
-  currentIndex: number   // 0–6
+  currentIndex: number
   answers: Answers
   onAnswer: (qKey: keyof Answers, value: number) => void
   onNext: () => void
   onBack: () => void
+  questions?: Question[]
 }
 
-export function Assessment({ currentIndex, answers, onAnswer, onNext, onBack }: AssessmentProps) {
-  const question = QUESTIONS[currentIndex]
+export function Assessment({ currentIndex, answers, onAnswer, onNext, onBack, questions = QUESTIONS }: AssessmentProps) {
+  const question = questions[currentIndex]
   const qKey = question.id as keyof Answers
   const selected = answers[qKey]
-  const isLast = currentIndex === QUESTIONS.length - 1
+  const isLast = currentIndex === questions.length - 1
   const questionNumber = currentIndex + 1
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
       <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-8 w-full max-w-lg">
         <div className="flex items-center gap-2 mb-6">
-          {QUESTIONS.map((_, i) => (
+          {questions.map((_, i) => (
             <div
               key={i}
               className={`h-1.5 flex-1 rounded-full transition-colors ${

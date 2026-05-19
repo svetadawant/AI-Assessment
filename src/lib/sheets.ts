@@ -4,6 +4,8 @@ import type { TierKey } from './types'
 const VALID_TIERS: TierKey[] = ['access', 'acceptance', 'adoption', 'action', 'autonomy']
 const TAB = 'Sheet1'
 const EMAIL_TAB = 'Emails'
+const LEARNER_TAB = 'Learner'
+const LEARNER_EMAIL_TAB = 'LearnerEmails'
 
 function getSheetClient() {
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
@@ -62,6 +64,65 @@ export async function appendEmailSignup(email: string, tier: TierKey, score: num
     insertDataOption: 'INSERT_ROWS',
     requestBody: { values: [[new Date().toISOString(), email, tier, score]] },
   })
+}
+
+export async function appendLearnerRow(values: (string | number)[]): Promise<number> {
+  const { sheets, sheetId } = getSheetClient()
+  const res = await sheets.spreadsheets.values.append({
+    spreadsheetId: sheetId,
+    range: `${LEARNER_TAB}!A:Q`,
+    valueInputOption: 'RAW',
+    insertDataOption: 'INSERT_ROWS',
+    requestBody: { values: [values] },
+  })
+  const updatedRange = res.data.updates?.updatedRange ?? ''
+  console.log('[sheets] appendLearnerRow updatedRange:', updatedRange)
+  const match = updatedRange.match(/(\d+)$/)
+  return match ? parseInt(match[1], 10) : 0
+}
+
+export async function updateLearnerEmailForRow(rowNumber: number, email: string): Promise<void> {
+  const { sheets, sheetId } = getSheetClient()
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: sheetId,
+    range: `${LEARNER_TAB}!Q${rowNumber}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [[email]] },
+  })
+}
+
+export async function appendLearnerEmailSignup(email: string, tier: TierKey, score: number): Promise<void> {
+  const { sheets, sheetId } = getSheetClient()
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: sheetId,
+    range: `${LEARNER_EMAIL_TAB}!A:D`,
+    valueInputOption: 'RAW',
+    insertDataOption: 'INSERT_ROWS',
+    requestBody: { values: [[new Date().toISOString(), email, tier, score]] },
+  })
+}
+
+export async function readLearnerTierColumn(): Promise<TierKey[]> {
+  const { sheets, sheetId } = getSheetClient()
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: sheetId,
+    range: `${LEARNER_TAB}!P2:P`,
+  })
+
+  const rows = res.data.values ?? []
+  const result: TierKey[] = []
+
+  for (const row of rows) {
+    const value = row[0]
+    if (!value) continue
+    if ((VALID_TIERS as string[]).includes(value)) {
+      result.push(value as TierKey)
+    } else {
+      console.warn(`[sheets] Unrecognized learner tier value: ${value}`)
+    }
+  }
+
+  return result
 }
 
 export async function readTierColumn(): Promise<TierKey[]> {

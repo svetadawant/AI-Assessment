@@ -14,7 +14,8 @@
       "Bash(npm install *)",
       "Read(//Users/svetlanadawant/.nvm/**)",
       "Read(//opt/homebrew/**)",
-      "Bash(ls /pkg/env/global/bin/ 2>/dev/null | grep -E \"node|npm|bun\")"
+      "Bash(ls /pkg/env/global/bin/ 2>/dev/null | grep -E \"node|npm|bun\")",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH\")"
     ]
   }
 }

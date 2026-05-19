@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { TIER_CONFIG } from '@/lib/config'
+import type { TierConfig } from '@/lib/config'
 import { BenchmarkChart } from './BenchmarkChart'
 import type { ApiState, TierKey } from '@/lib/types'
 
@@ -11,6 +12,8 @@ interface ResultsProps {
   apiState: ApiState
   onRetry: () => void
   onStartOver: () => void
+  tierConfig?: Record<TierKey, TierConfig>
+  emailApiPath?: string
 }
 
 // All stages use Guild orange highlights for consistency
@@ -21,12 +24,12 @@ const STAGE_CARD_STYLE = {
   headingColor: '#E7651C',
 }
 
-export function Results({ clientScore, clientTier, apiState, onRetry, onStartOver }: ResultsProps) {
+export function Results({ clientScore, clientTier, apiState, onRetry, onStartOver, tierConfig = TIER_CONFIG, emailApiPath = '/api/email' }: ResultsProps) {
   const isScoreOutOfRange = apiState.errorCode === 'SCORE_OUT_OF_RANGE'
   const hasError = apiState.status === 'error'
 
   const displayTier = apiState.result?.tier ?? clientTier
-  const config = TIER_CONFIG[displayTier]
+  const config = tierConfig[displayTier]
   const styles = STAGE_CARD_STYLE
 
   const [emailValue, setEmailValue] = useState('')
@@ -37,7 +40,7 @@ export function Results({ clientScore, clientTier, apiState, onRetry, onStartOve
     ev.preventDefault()
     setEmailStatus('sending')
     try {
-      const res = await fetch('/api/email', {
+      const res = await fetch(emailApiPath, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
