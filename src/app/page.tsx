@@ -13,7 +13,7 @@ const EMPTY_ANSWERS: Answers = {
   q1: null, q2: null, q3: null, q4: null, q5: null,
   q6: null, q7: null, q8: null, q9: null,
 }
-const EMPTY_INTAKE: IntakeData = { first_name: '', last_name: '', title: '', company_name: '' }
+const EMPTY_INTAKE: IntakeData = { first_name: '', last_name: '', title: '' }
 const INITIAL_API: ApiState = { status: 'idle', result: null, errorCode: null }
 
 export default function Home() {

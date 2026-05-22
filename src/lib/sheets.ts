@@ -24,14 +24,13 @@ function getSheetClient() {
   return { sheets: google.sheets({ version: 'v4', auth }), sheetId }
 }
 
-// Columns: timestamp | first_name | last_name | title | company_name
-//          | q1–q9 (9 cols) | score | tier | email  →  A:Q (17 columns)
+// Columns: timestamp | first_name | last_name | title | q1–q9 (9 cols) | score | tier | email  →  A:P (16 columns)
 // Returns the 1-based row number of the appended row so email can be written later.
 export async function appendRow(values: (string | number)[]): Promise<number> {
   const { sheets, sheetId } = getSheetClient()
   const res = await sheets.spreadsheets.values.append({
     spreadsheetId: sheetId,
-    range: `${TAB}!A:Q`,
+    range: `${TAB}!A:P`,
     valueInputOption: 'RAW',
     insertDataOption: 'INSERT_ROWS',
     requestBody: { values: [values] },
@@ -43,12 +42,12 @@ export async function appendRow(values: (string | number)[]): Promise<number> {
   return match ? parseInt(match[1], 10) : 0
 }
 
-// Writes the email address into column Q of an existing row.
+// Writes the email address into column P of an existing row.
 export async function updateEmailForRow(rowNumber: number, email: string): Promise<void> {
   const { sheets, sheetId } = getSheetClient()
   await sheets.spreadsheets.values.update({
     spreadsheetId: sheetId,
-    range: `${TAB}!Q${rowNumber}`,
+    range: `${TAB}!P${rowNumber}`,
     valueInputOption: 'RAW',
     requestBody: { values: [[email]] },
   })
@@ -70,7 +69,7 @@ export async function appendLearnerRow(values: (string | number)[]): Promise<num
   const { sheets, sheetId } = getSheetClient()
   const res = await sheets.spreadsheets.values.append({
     spreadsheetId: sheetId,
-    range: `${LEARNER_TAB}!A:Q`,
+    range: `${LEARNER_TAB}!A:R`,
     valueInputOption: 'RAW',
     insertDataOption: 'INSERT_ROWS',
     requestBody: { values: [values] },
@@ -85,7 +84,7 @@ export async function updateLearnerEmailForRow(rowNumber: number, email: string)
   const { sheets, sheetId } = getSheetClient()
   await sheets.spreadsheets.values.update({
     spreadsheetId: sheetId,
-    range: `${LEARNER_TAB}!Q${rowNumber}`,
+    range: `${LEARNER_TAB}!R${rowNumber}`,
     valueInputOption: 'RAW',
     requestBody: { values: [[email]] },
   })
@@ -106,7 +105,7 @@ export async function readLearnerTierColumn(): Promise<TierKey[]> {
   const { sheets, sheetId } = getSheetClient()
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: `${LEARNER_TAB}!P2:P`,
+    range: `${LEARNER_TAB}!O2:O`,
   })
 
   const rows = res.data.values ?? []
@@ -129,7 +128,7 @@ export async function readTierColumn(): Promise<TierKey[]> {
   const { sheets, sheetId } = getSheetClient()
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: `${TAB}!P2:P`,
+    range: `${TAB}!O2:O`,
   })
 
   const rows = res.data.values ?? []

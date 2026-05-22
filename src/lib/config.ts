@@ -52,10 +52,10 @@ export const QUESTIONS: Question[] = [
     category: 'ADOPTION',
     text: 'AI is used daily for work by...',
     options: [
-      { label: '< 25% of the workforce', value: 1 },
-      { label: '25–50% of the workforce', value: 2 },
-      { label: '50–80% of the workforce', value: 3 },
-      { label: '80%+ of the workforce', value: 4 },
+      { label: '< 25% of my peers', value: 1 },
+      { label: '25–50% of my peers', value: 2 },
+      { label: '50–80% of my peers', value: 3 },
+      { label: '80%+ of my peers', value: 4 },
     ],
   },
   {

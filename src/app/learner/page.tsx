@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { IntakeForm } from '@/components/IntakeForm'
 import { Assessment } from '@/components/Assessment'
-import { Results } from '@/components/Results'
+import { LearnerFeedbackForm } from '@/components/LearnerFeedbackForm'
+import { LearnerResults } from '@/components/LearnerResults'
 import { computeScore, assignTier } from '@/lib/scoring'
-import { LEARNER_QUESTIONS, LEARNER_TIER_CONFIG } from '@/lib/learner-config'
-import type { Answers, ApiState, IntakeData, Step, SubmitPayload, TierKey } from '@/lib/types'
+import { LEARNER_QUESTIONS } from '@/lib/learner-config'
+import type { Answers, ApiState, IntakeData, LearnerFeedback, Step, SubmitPayload, TierKey } from '@/lib/types'
 
 const STORAGE_KEY = 'guild_learner_result'
 
@@ -14,7 +15,7 @@ const EMPTY_ANSWERS: Answers = {
   q1: null, q2: null, q3: null, q4: null, q5: null,
   q6: null, q7: null, q8: null, q9: null,
 }
-const EMPTY_INTAKE: IntakeData = { first_name: '', last_name: '', title: '', company_name: '' }
+const EMPTY_INTAKE: IntakeData = { first_name: '', last_name: '', title: '' }
 const INITIAL_API: ApiState = { status: 'idle', result: null, errorCode: null }
 
 export default function LearnerPage() {
@@ -25,6 +26,7 @@ export default function LearnerPage() {
   const [apiState, setApiState] = useState<ApiState>(INITIAL_API)
   const [clientScore, setClientScore] = useState(0)
   const [clientTier, setClientTier] = useState<ReturnType<typeof assignTier>>('access')
+  const [pendingPayload, setPendingPayload] = useState<SubmitPayload | null>(null)
 
   const abortRef = useRef<{
     controller: AbortController
@@ -75,6 +77,7 @@ export default function LearnerPage() {
     setApiState(INITIAL_API)
     setClientScore(0)
     setClientTier('access')
+    setPendingPayload(null)
   }
 
   function handleIntakeSubmit(data: IntakeData) {
@@ -99,10 +102,26 @@ export default function LearnerPage() {
       const tier = assignTier(score)
       setClientScore(score)
       setClientTier(tier)
-      setStep('results')
-      setApiState({ status: 'pending', result: null, errorCode: null })
-      submitToApi({ ...intake, ...fullAnswers })
+      setPendingPayload({ ...intake, ...fullAnswers })
+      setStep('feedback')
     }
+  }
+
+  function handleFeedbackSubmit(feedback: LearnerFeedback) {
+    if (!pendingPayload) return
+    const payload = {
+      ...pendingPayload,
+      ...(feedback.q10 ? { q10: feedback.q10 } : {}),
+      ...(feedback.q11 ? { q11: feedback.q11 } : {}),
+    }
+    setStep('results')
+    setApiState({ status: 'pending', result: null, errorCode: null })
+    submitToApi(payload)
+  }
+
+  function handleFeedbackBack() {
+    setStep('assessment')
+    setQuestionIndex(8)
   }
 
   function handleBack() {
@@ -163,12 +182,9 @@ export default function LearnerPage() {
   }
 
   function handleRetry() {
-    const fullAnswers = answers as {
-      q1: number; q2: number; q3: number; q4: number; q5: number
-      q6: number; q7: number; q8: number; q9: number
-    }
+    if (!pendingPayload) return
     setApiState({ status: 'pending', result: null, errorCode: null })
-    submitToApi({ ...intake, ...fullAnswers })
+    submitToApi(pendingPayload)
   }
 
   if (step === 'intake') {
@@ -194,15 +210,19 @@ export default function LearnerPage() {
     )
   }
 
+  if (step === 'feedback') {
+    return (
+      <LearnerFeedbackForm
+        onSubmit={handleFeedbackSubmit}
+        onBack={handleFeedbackBack}
+      />
+    )
+  }
+
   return (
-    <Results
-      clientScore={clientScore}
+    <LearnerResults
       clientTier={clientTier}
       apiState={apiState}
-      onRetry={handleRetry}
-      onStartOver={startOver}
-      tierConfig={LEARNER_TIER_CONFIG}
-      emailApiPath="/api/learner-email"
     />
   )
 }

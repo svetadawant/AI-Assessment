@@ -5,7 +5,7 @@ export function validatePayload(body: unknown): { error: string } | null {
 
   const data = body as Record<string, unknown>
 
-  for (const key of ['first_name', 'last_name', 'title', 'company_name'] as const) {
+  for (const key of ['first_name', 'last_name', 'title'] as const) {
     if (
       typeof data[key] !== 'string' ||
       (data[key] as string).trim().length === 0 ||

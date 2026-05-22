@@ -30,7 +30,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const data = body as {
-    first_name: string; last_name: string; title: string; company_name: string
+    first_name: string; last_name: string; title: string
+    q10?: string; q11?: string
     q1: number; q2: number; q3: number; q4: number; q5: number
     q6: number; q7: number; q8: number; q9: number
   }
@@ -51,11 +52,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     data.first_name.trim(),
     data.last_name.trim(),
     data.title.trim(),
-    data.company_name.trim(),
     data.q1, data.q2, data.q3, data.q4, data.q5,
     data.q6, data.q7, data.q8, data.q9,
     score,
     tier,
+    data.q10?.trim() ?? '',
+    data.q11?.trim() ?? '',
   ]
 
   let rowNumber = 0

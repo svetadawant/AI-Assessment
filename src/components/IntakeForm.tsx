@@ -18,7 +18,6 @@ export function IntakeForm({ initial, onSubmit, title = 'Organizational AI Matur
     if (!values.first_name.trim()) e.first_name = 'First name is required'
     if (!values.last_name.trim()) e.last_name = 'Last name is required'
     if (!values.title.trim()) e.title = 'Your title is required'
-    if (!values.company_name.trim()) e.company_name = 'Company name is required'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -30,7 +29,6 @@ export function IntakeForm({ initial, onSubmit, title = 'Organizational AI Matur
         first_name: values.first_name.trim(),
         last_name: values.last_name.trim(),
         title: values.title.trim(),
-        company_name: values.company_name.trim(),
       })
     }
   }
@@ -106,24 +104,6 @@ export function IntakeForm({ initial, onSubmit, title = 'Organizational AI Matur
             />
             {errors.title && (
               <p className="text-red-400 text-xs mt-1">{errors.title}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-200 mb-1" htmlFor="company_name">
-              Company Name
-            </label>
-            <input
-              id="company_name"
-              type="text"
-              value={values.company_name}
-              onChange={e => setValues(v => ({ ...v, company_name: e.target.value }))}
-              className={`w-full border rounded-lg px-3 py-2 text-sm bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.company_name ? 'border-red-400' : 'border-gray-600'
-              }`}
-            />
-            {errors.company_name && (
-              <p className="text-red-400 text-xs mt-1">{errors.company_name}</p>
             )}
           </div>
 

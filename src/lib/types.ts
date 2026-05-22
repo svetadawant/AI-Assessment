@@ -2,13 +2,17 @@
 
 export type TierKey = 'access' | 'acceptance' | 'adoption' | 'action' | 'autonomy'
 
-export type Step = 'intake' | 'assessment' | 'results'
+export type Step = 'intake' | 'assessment' | 'feedback' | 'results'
+
+export interface LearnerFeedback {
+  q10: string | null
+  q11: string
+}
 
 export interface IntakeData {
   first_name: string
   last_name: string
   title: string
-  company_name: string
 }
 
 export interface Answers {
@@ -52,7 +56,8 @@ export interface SubmitPayload {
   first_name: string
   last_name: string
   title: string
-  company_name: string
+  q10?: string
+  q11?: string
   q1: number
   q2: number
   q3: number
